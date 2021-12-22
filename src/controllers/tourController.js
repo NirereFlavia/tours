@@ -1,5 +1,5 @@
 import tourInfos from "../models/tour";
-
+import TokenAuth from "../helpers/tokenAuth"
 class TourController {
  //creat tour in db
 
