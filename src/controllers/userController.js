@@ -1,6 +1,8 @@
 import UserInfos from "../models/user";
 import bcrypt from "bcrypt";
 import TokenAuth from "../helpers/tokenAuth";
+import BookInfos from "../models/book";
+import TourInfos from"../models/tour";
 
 class UserController {
  //creat user in db
@@ -28,9 +30,12 @@ class UserController {
 
     return res.status(200).json({message: "get users successfully", data: users});
 }
+
 //delete one specifiq user
+
 static async getOneUser(req,res){
     const user = await UserInfos.findById(req.params.id);
+
     if(!user){
         return res.status(404).json({error:"user not found"});
     }
@@ -70,6 +75,45 @@ if (bcrypt.compareSync(req.body.password, user.password)) {
 return res.status(400).json({error: "password is wrong"})
 
 }
- }
+
+//Booking functions
+
+static async bookTour(req,res){
+const bookData={
+    user:req.user._id,
+    tour:req.params.id
+};
+    const book= await BookInfos.create(bookData);
+
+    const tour= await TourInfos.findById(req.params.id);
+    const tourSeats= tour.seats-1;
+    await TourInfos.findByIdAndUpdate(req.params.id,{seats:tourSeats});
+
+    if(!book){
+        return res.status(404).json({error:"failed to book"})
+    }
+    return res.status(200).json({message:"Booked succesfully", data:book})
+}
+
+//Get all booked tours
+static async getAllBookings(req,res){
+    const books= await BookInfos.find();
+    
+        if(!books){
+            return res.status(404).json({error:"No books registered"})
+        }
+        return res.status(200).json({message:"Booked succesfully registered", data:books});
+    }
+    static async getAllBookingsByTourId(req,res){
+        const books = await BookInfos.find({tour:req.user.id});
+
+        if(!books){
+            return res.status(404).json({error: "book not found"});
+        }
+        return res.status(200).json({message:"success",data:books});
+    }
+}
+
+ 
 
 export default UserController;

@@ -14,14 +14,22 @@ const tourSchema = new mongoose.Schema(
      price:Number,
 
      seats:Number,
-    //  images:[
-    //      {
-    //          type:String,
-    //      }
-    //  ]
+     user:{
+         type:mongoose.Schema.ObjectId,
+         ref:"User",
+     }
+   
 
      }
-)
+);
+
+tourSchema.pre(/^find/ , function (next) {
+    this.populate({
+    path: "user",
+    select:"lastName email address"
+    });
+    next();
+})
     const tour = mongoose.model('Tour',tourSchema);
 
     export default tour;

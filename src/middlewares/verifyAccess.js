@@ -17,3 +17,5 @@ const verifyAccess= (requiredRole)=>{
     };
 
 };
+
+export default verifyAccess;
